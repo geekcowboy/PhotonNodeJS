@@ -1,0 +1,93 @@
+<html>
+<head>
+  <title>Spark I/O Example</title>
+</head>
+
+<body>
+  <h1>Light Detector 3000!</h1>
+  <div id="spark-login"/>
+  <br>
+  <br>
+
+  //
+  // Dynamic notification of light or dark
+  //
+  <p id="alert">Alert Status: PENDING</p>
+  <script src="http://cdn.jsdelivr.net/sparkjs/0.5.2/spark.min.js"></script>
+  <script>
+  var token = 'YOUR-TOKEN-HERE';
+  spark.on('login', function() {
+    //Get your devices events
+    spark.getEventStream(false, 'mine', function(data) {
+      var alertString = JSON.stringify(data);
+      var alertObj = JSON.parse(alertString);
+      var alertMessage = alertObj.data;
+      console.log("Event: " + alertString);
+      document.getElementById("alert").innerHTML = 'Alert Status: ' + alertMessage;
+    });
+
+    //
+    // Display connected Photon stats upon login
+    //
+    spark.listDevices(function(err, devices) {
+      var device = devices[0];
+
+      console.log('Device name: ' + device.name);
+      console.log('- connected?: ' + device.connected);
+      console.log('- variables: ' + device.variables);
+      console.log('- functions: ' + device.functions);
+      console.log('- version: ' + device.version);
+      console.log('- requires upgrade?: ' + device.requiresUpgrade);
+    });
+  });
+  // Login as usual
+  //spark.login({ username: 'email@example.com', password: 'password'});
+  spark.login({ accessToken: token });
+  </script>
+  <br><br><br><br>
+
+  //
+  // Demo of a button that allows user to get reading from photoresistor
+  //
+  <button onclick="myFunction()">Manual Reading</button>
+  <p id="reading">Awaiting manual reading...</p>
+  <script>
+  var token = 'YOUR-TOKEN-HERE';
+  function myFunction() {
+    spark.listDevices(function(err, devices) {
+      var device = devices[0];
+
+      device.getVariable('analogvalue', function(err, data) {
+        if (err) {
+          console.log('An error occurred while getting attrs:', err);
+        } else {
+          console.log('Device attr retrieved successfully:', data);
+          var sensorString = JSON.stringify(data);
+          var sensorObj = JSON.parse(sensorString);
+          var sensorReading = sensorObj.result;
+          document.getElementById("reading").innerHTML = 'Manual Sensor Reading: ' + sensorReading;
+        }
+      });
+    });
+  }
+  </script>
+  <br><br><br><br>
+
+  //
+  //  Checkbox and button that allows user to turn LED7 on and off
+  //
+  <br>
+  <form action="https://api.particle.io/v1/devices/YOUR-PHOTON-ID-HERE/led?access_token=YOUR-TOKEN-HERE" method="POST">
+    Tell your device what to do!<br>
+    <br>
+    <input type="radio" name="args" value="on">Turn the LED on.
+    <br>
+    <input type="radio" name="args" value="off">Turn the LED off.
+    <br>
+    <br>
+    <input type="submit" value="Do it!">
+  </form>
+
+
+</body>
+</html>
