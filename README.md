@@ -10,3 +10,5 @@ Allows for 3 interactions:
 1) Automatic update of webpage text showing the user whether the it is bright or dark
 2) User can press a button to request the raw analog value from the Photon ADC
 3) Using radio buttons, the user can toggle the LED connected to pin D7
+
+IMPORTANT:  Remember to edit the Photon Server/index.html file with your token keys!!! (total of 4 changes)
